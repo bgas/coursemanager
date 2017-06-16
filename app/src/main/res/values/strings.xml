@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">Course Manager</string>
+    <string name="title_activity_term_list">TermListActivity</string>
+    <string name="action_create_Sample">Create Sample Data</string>
+    <string name="delete_all_notes">Delete All</string>
+    <string name="are_you_sure">are you sure</string>
+    <string name="all_deleted">all items deleted</string>
+    <string name="title_activity_main2">Main2Activity</string>
+    <string name="new_term">New Term</string>
+    <string name="itemUpdated">Item Updated</string>
+    <string name="delete">Delete</string>
+    <string name="item_deleted">Item Deleted</string>
+    <string name="current_term">Current Term</string>
+    <string name="term_list">Term List</string>
+    <string name="new_course">New Course</string>
+
+</resources>
