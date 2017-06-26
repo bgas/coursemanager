@@ -2,25 +2,47 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingRight="16dp"
     android:paddingTop="16dp"
-    android:paddingBottom="16dp" tools:context=".TermActivity">
+    android:paddingBottom="16dp"
+    tools:context=".TermActivity">
 
+    <TextView
+        android:id="@+id/termTitle"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:textSize="25sp"
+        android:text="@string/term" />
     <TextView
         android:id="@+id/textViewTermTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/termTitle"
+        android:layout_marginRight="15dp"
         android:layout_alignParentTop="true"
+        android:textSize="25sp"/>
+
+    <TextView
+        android:id="@+id/contentList"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:textSize="30dp"
-        android:text="TextView" />
+        android:layout_below="@+id/termTitle"
+        android:textSize="25sp"
+        android:text="@string/textviewcontains" />
 
     <ListView
         android:id="@+id/android:list"
+        android:layout_below="@id/contentList"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="wrap_content"/>
 
     <at.markushi.ui.CircleButton
         android:layout_width="64dp"

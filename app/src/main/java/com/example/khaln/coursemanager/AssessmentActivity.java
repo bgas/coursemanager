@@ -1,38 +1,24 @@
 package com.example.khaln.coursemanager;
 
-import android.app.LoaderManager;
-import android.content.ContentValues;
 import android.content.CursorLoader;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.AlertDialog;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.khaln.coursemanager.repo.AssessmentRepo;
-import com.example.khaln.coursemanager.repo.CourseRepo;
 import com.example.khaln.coursemanager.repo.NoteRepo;
-import com.example.khaln.coursemanager.repo.NoteRepo;
-
-
 
 public class AssessmentActivity extends TermActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_term);
+        setContentView(R.layout.activity_assessment);
 
         /*Set Instance Variables*/
         intent = getIntent();
@@ -40,11 +26,16 @@ public class AssessmentActivity extends TermActivity {
         repoTitle = intent.getStringExtra(AssessmentRepo.TITLE);
         repoTableName = AssessmentRepo.TABLE_NAME;
         uri = intent.getParcelableExtra(repoTableName);
+        Log.d(this.getLocalClassName(), "extra from intent: " +uri);
         childRepoTitle = NoteRepo.TITLE;
         childRepoID = NoteRepo.ID;
         childRepoTableName = NoteRepo.TABLE_NAME;
         childsParentId = NoteRepo.ASSESSMENT_ID;
         childUri = MyContentProvider.NOTE_URI;
+        childClass = NoteDetailsActivity.class;
+        childClassDetails = NoteDetailsActivity.class;
+        detailsIntent = new Intent(this, childClass);
+        childIntent = new Intent(this, childClassDetails);
 
         /*set cursor adapter*/
         String[] from = {childRepoTitle, childRepoID};
@@ -59,9 +50,20 @@ public class AssessmentActivity extends TermActivity {
         list.setOnItemClickListener(getChildActionClickListener());
 
         //get term title and set as text for titleTextView
-        TextView titleTextView = (TextView) findViewById(R.id.textViewTermTitle);
+        TextView titleTextView = (TextView) findViewById(R.id.textViewAssessmentTitle);
+        Log.d(this.getLocalClassName(), "repoTitle: " +repoTitle);
         titleTextView.setText(repoTitle);
 
         getLoaderManager().initLoader(0, null, this);
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        //String childUr = "";
+        String loaderId = intent.getStringExtra(AssessmentRepo.ID);
+        Uri loaderChildUri = MyContentProvider.NOTE_URI;
+        String loaderChildsParentId = NoteRepo.ASSESSMENT_ID;
+        Log.d(this.getLocalClassName(), "loaderChildUri: " + loaderChildUri + " loaderChildsParentId: "+ loaderChildsParentId + " loaderId: " + loaderId);
+        return new CursorLoader(this, loaderChildUri, null, loaderChildsParentId + "=" + loaderId, null, null);
     }
 }

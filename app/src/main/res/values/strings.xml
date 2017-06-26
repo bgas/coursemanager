@@ -13,5 +13,26 @@
     <string name="current_term">Current Term</string>
     <string name="term_list">Term List</string>
     <string name="new_course">New Course</string>
+    <string name="new_mentor">New Mentor</string>
+    <string name="item_id_tag">1100</string>
+    <string name="item_title_tag">1101</string>
+    <string name="item_pos_tag">1102</string>
+    <string name="selected_tag">1103</string>
+    <string name="start_date">Start Date</string>
+    <string name="end_date">End Date</string>
+    <string name="title">Title</string>
+    <string name="mentors">Mentors</string>
+    <string name="status">status</string>
+    <string name="newMentorTag">newMentorTag</string>
+    <string name="viewMentorTag">viewMentorTag</string>
+    <string name="view_id_selected">selected</string>
+    <string name="due_date">Due Date</string>
+    <string name="new_assessment">New Assessment</string>
+    <string name="term">Term:</string>
+    <string name="textview">TextView</string>
+    <string name="textviewcontains">Contains:</string>
+    <string name="course">Course:</string>
+    <string name="assessment">Assessment:</string>
+
 
 </resources>

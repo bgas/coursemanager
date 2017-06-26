@@ -18,6 +18,7 @@ import com.example.khaln.coursemanager.repo.NoteRepo;
 import com.example.khaln.coursemanager.repo.TermRepo;
 
 import java.net.URI;
+import java.util.Arrays;
 
 /**
  * Created by khaln on 5/11/17.
@@ -173,6 +174,9 @@ public class MyContentProvider extends ContentProvider {
             case COURSE:
                 table = CourseRepo.TABLE_NAME;
                 break;
+            case MENTOR:
+                table = MentorRepo.TABLE_NAME;
+                break;
             case ASSESSMENT:
                 table = AssessmentRepo.TABLE_NAME;
                 break;
@@ -181,8 +185,9 @@ public class MyContentProvider extends ContentProvider {
                 break;
             default: throw new SQLException("Failed to insert " + uri);
         }
+        Log.d("MyContentProvider DL", "table: "+ table);
+
         long id = database.insert(table, null, values);
-//        Log.d("MyContentProvider DL", ""+ table + "/" + id +"");
         return Uri.parse(table + "/" + id);
     }
 
@@ -204,6 +209,9 @@ public class MyContentProvider extends ContentProvider {
             case NOTE:
                 table = NoteRepo.TABLE_NAME;
                 break;
+            case MENTOR:
+                table = MentorRepo.TABLE_NAME;
+                break;
             default: throw new SQLException("Failed to delete " + uri);
         }
         return database.delete(table, selection, selectionArgs);
@@ -211,6 +219,7 @@ public class MyContentProvider extends ContentProvider {
 
     @Override
     public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
+        Log.d(this.getClass().toString(), "uri: "+ uri + " match result: " + sUriMatcher.match(uri) + " selction: " +selection + " args: " + Arrays.toString(selectionArgs));
         String table;
         switch (sUriMatcher.match(uri)) {
             case TERM:
@@ -225,8 +234,13 @@ public class MyContentProvider extends ContentProvider {
             case NOTE:
                 table = NoteRepo.TABLE_NAME;
                 break;
-            default: throw new SQLException("Failed to update " + uri);
+            case MENTOR:
+                Log.d(this.getClass().toString(), "mentor update case");
+                table = MentorRepo.TABLE_NAME;
+                break;
+            default: throw new SQLException("Failed to update: " + uri +" case: "+sUriMatcher.match(uri));
         }
+        Log.d(this.getClass().toString(), "values: "+ values.toString()+" selection: "+selection+" selectionArgs: "+ Arrays.toString(selectionArgs));
         return database.update(table, values, selection, selectionArgs);
     }
 }

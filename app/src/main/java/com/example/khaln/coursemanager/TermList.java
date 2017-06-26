@@ -31,6 +31,7 @@ public class TermList extends ActionBarActivity implements LoaderManager.LoaderC
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_term_list);
         //Now being handled by cursorLoader Cursor cursor = getContentResolver().query(MyContentProvider.TERM_URI, TermRepo.COLUMNS, null, null, null, null);
         String[] from = {TermRepo.TITLE, TermRepo.ID};
@@ -47,9 +48,11 @@ public class TermList extends ActionBarActivity implements LoaderManager.LoaderC
                 Uri uri = Uri.parse(MyContentProvider.TERM_URI + "/" + id);
                 intent.putExtra(TermRepo.TABLE_NAME, uri);
 
-                HashMap tag = (HashMap) view.getTag();
-                intent.putExtra(TermRepo.ID, (String) tag.get("id"));
-                intent.putExtra(TermRepo.TITLE, (String) tag.get("titleText"));
+//                HashMap tag = (HashMap) view.getTag();
+//                intent.putExtra(TermRepo.ID, (String) tag.get("id"));
+//                intent.putExtra(TermRepo.TITLE, (String) tag.get("titleText"));
+                intent.putExtra(TermRepo.ID, (String) view.getTag(R.string.item_id_tag));
+                intent.putExtra(TermRepo.TITLE, (String) view.getTag(R.string.item_title_tag));
 
                 //intent.putExtra(TermRepo.TITLE, termTitle);
                 startActivityForResult(intent, EDITOR_REQUEST_CODE);
@@ -122,7 +125,7 @@ public class TermList extends ActionBarActivity implements LoaderManager.LoaderC
 
     public void openEditorForNewTerm(View view) {
         Intent intent = new Intent(this, TermDetailsActivity.class);
-        startActivityForResult(intent, EDITOR_REQUEST_CODE);;
+        startActivityForResult(intent, EDITOR_REQUEST_CODE);
     }
 
     private void deleteAllItems() {

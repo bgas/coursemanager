@@ -64,6 +64,30 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.khaln.coursemanager.CourseActivity" />
         </activity>
+        <activity
+            android:name=".MentorDetailsActivity"
+            android:label="MentorDetailsActivity"
+            android:parentActivityName=".CourseDetailsActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.khaln.coursemanager.CourseDetailsActivity" />
+        </activity>
+        <activity
+            android:name=".AssessmentDetailsActivity"
+            android:label="AssessmentDetailsActivity"
+            android:parentActivityName=".AssessmentActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.khaln.coursemanager.AssessmentActivity" />
+        </activity>
+        <activity
+            android:name=".NoteDetailsActivity"
+            android:label="NoteDetailsActivity"
+            android:parentActivityName=".AssessmentActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.khaln.coursemanager.AssessmentActivity" />
+        </activity>
         <!--
         <activity
             android:name=".AssessmentActivity"

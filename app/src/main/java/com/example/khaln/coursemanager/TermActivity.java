@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -34,26 +35,35 @@ public class TermActivity extends AppCompatActivity
     protected static final int CHILD_REQUEST_CODE = 1002;
     protected CursorAdapter cursorAdapter;
     protected Intent intent;
-    protected Uri uri;
     protected String repoId;
     protected String repoTitle;
     protected String repoTableName;
+    protected Uri uri;
     protected String childRepoTitle;
     protected String childRepoID;
     protected String childRepoTableName;
     protected String childsParentId;
     protected Uri childUri;
+    protected Class childClass;
+    protected Class childClassDetails;
     protected Intent childIntent;
-
     protected Intent detailsIntent;
-    protected Class detailsActivityClass;
-    protected Class childActivityClass;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_term);
         /*Set Instance Variables*/
+
+
+/*
+        Intent intent = new Intent(TermList.this, TermActivity.class);
+        Uri uri = Uri.parse(MyContentProvider.TERM_URI + "/" + id);
+        intent.putExtra(TermRepo.TABLE_NAME, uri);
+        intent.putExtra(TermRepo.ID, (String) view.getTag(R.string.item_id_tag));
+        intent.putExtra(TermRepo.TITLE, (String) view.getTag(R.string.item_title_tag));
+        startActivityForResult(intent, EDITOR_REQUEST_CODE);
+        */
         intent = getIntent();
         repoId = intent.getStringExtra(TermRepo.ID);
         repoTitle = intent.getStringExtra(TermRepo.TITLE);
@@ -62,17 +72,17 @@ public class TermActivity extends AppCompatActivity
         childRepoTitle = CourseRepo.TITLE;
         childRepoID = CourseRepo.ID;
         childRepoTableName = CourseRepo.TABLE_NAME;
-        childsParentId = CourseRepo.TERM_ID;
         childUri = MyContentProvider.COURSE_URI;
-        childIntent = new Intent(this, CourseActivity.class);
+        childClass = CourseActivity.class;
+        childClassDetails = CourseDetailsActivity.class;
+        childIntent = new Intent(this, childClass);
         detailsIntent = new Intent(this, TermDetailsActivity.class);
-        //detailsActivityClass = TermDetailsActivity.class;
-        //childActivityClass = CourseActivity.class;
 
         /*set cursor adapter*/
         String[] from = {childRepoTitle, childRepoID};
         int[] to = {R.id.textViewItem};
         cursorAdapter = new ManagerCursorAdapter(this, R.layout.course_list_item, null, from, to, 0);
+
         /*set list adapter*/
         ListView list = (ListView) findViewById(android.R.id.list);
         list.setAdapter(cursorAdapter);
@@ -90,16 +100,19 @@ public class TermActivity extends AppCompatActivity
 
 
     protected void viewDetailsAction() {
-        Log.d(this.getLocalClassName(), "Edit existing item of this type");
         Intent viewDetailsIntent = detailsIntent;//new Intent(this, detailsActivityClass);
+        //TODO fix this shit!
+        //Uri uri = Uri.parse(MyContentProvider.TERM_URI + "/" + id);
         viewDetailsIntent.putExtra(repoTableName, uri);
+        Log.d(this.getLocalClassName(), "repoTableName: " + repoTableName+ " uri: "+uri +" detailsIntent: "+ detailsIntent.toString());
         startActivityForResult(viewDetailsIntent, EDITOR_REQUEST_CODE);
     }
 
     public void openEditorForNewItem(View view) {
-        Log.d(this.getLocalClassName(), "Create new item as child of this type");   Log.d(this.getLocalClassName(), "termactivity.this: " + TermActivity.this); Log.d(this.getLocalClassName(), "this: " + this);
-        Intent itemIntent = childIntent;
-        startActivityForResult(itemIntent, EDITOR_REQUEST_CODE);
+        Log.d(this.getLocalClassName(), "Create new item as child of this type with uri lastPath: " + uri.getLastPathSegment());
+        Intent intent = new Intent(this, childClassDetails);
+        intent.putExtra(childRepoTableName, uri.getLastPathSegment());
+        startActivityForResult(intent, EDITOR_REQUEST_CODE);
     }
 
     /* create and respond to child Activities */
@@ -107,12 +120,12 @@ public class TermActivity extends AppCompatActivity
         AdapterView.OnItemClickListener listener = new AdapterView.OnItemClickListener(){
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int Position, long id){
-//                Log.d(this.getClass().toString(), "this equals termactivity.this: "+ this.equals(TermDetailsActivity.class) + " this.getClass equals termactivity.this: "+ this.getClass().equals(TermDetailsActivity.class));
                 Uri childIDUri = Uri.parse(childUri + "/" + id);
                 childIntent.putExtra(childRepoTableName, childIDUri);
-                HashMap tag = (HashMap) view.getTag();
-                childIntent.putExtra(childRepoID, (String) tag.get("id"));
-                childIntent.putExtra(childRepoTitle, (String) tag.get("titleText"));
+                childIntent.putExtra(childRepoID, (String) view.getTag(R.string.item_id_tag));
+                Log.d(this.getClass().toString(), "tag1: "+ (String) view.getTag(R.string.item_id_tag) + " tag2: " + (String) view.getTag(R.string.item_title_tag) );
+                childIntent.putExtra(childRepoTitle, (String) view.getTag(R.string.item_title_tag));
+                Log.d(this.getClass().toString(), "childIDUri: " +childIDUri + " childRepoTableName : " + childRepoTableName + " childRepoID : " + childRepoID + " childRepoTitle: " + childRepoTitle);
                 startActivityForResult(childIntent, CHILD_REQUEST_CODE);
             }
         };
@@ -120,7 +133,8 @@ public class TermActivity extends AppCompatActivity
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
-//        Log.d(this.getLocalClassName(), "activity result requestCode: " + requestCode + "resultCode: " + resultCode + "data: " + data  );
+        Log.d(this.getLocalClassName(), "activity result requestCode: " + requestCode + "resultCode: " + resultCode /* + "data: " + data */ );
+        Log.d(this.getLocalClassName(), " requestCode == EDITOR_REQUEST_CODE: " +(requestCode == EDITOR_REQUEST_CODE) + " resultCode == RESULT_OK: " +(resultCode == RESULT_OK));
         if (requestCode == EDITOR_REQUEST_CODE && resultCode == RESULT_OK){
             restartLoader();
         }
@@ -135,23 +149,36 @@ public class TermActivity extends AppCompatActivity
         Log.d(this.getLocalClassName(),"restartLoader");
         getLoaderManager().restartLoader(0, null, this);
     }
+    /*
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-//        Log.d(this.getLocalClassName(), "CourseRepo.TERM_ID = repoId: " + CourseRepo.TERM_ID + "=" + repoId);
+        String childsParentId = CourseRepo.TERM_ID;
+        Log.d(this.getLocalClassName(), "childUri: " + childUri + " childsParentId: "+ childsParentId + " repoId: " + repoId);
         return new CursorLoader(this, childUri, null, childsParentId + "=" + repoId, null, null);
+    }
+    */
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        String loaderId = intent.getStringExtra(TermRepo.ID);
+        Uri loaderChildUri = MyContentProvider.COURSE_URI;
+        String loaderChildsParentId = CourseRepo.TERM_ID;
+        Log.d(this.getLocalClassName(), "loaderChildUri: " + loaderChildUri + " loaderChildsParentId: "+ loaderChildsParentId + " loaderId: " + loaderId);
+        return new CursorLoader(this, loaderChildUri, null, loaderChildsParentId + "=" + loaderId, null, null);
     }
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-//        Log.d(this.getLocalClassName(), "onLoadFinished: ");
+        Log.d(this.getLocalClassName(), "onLoadFinished: ");
+        Log.d(this.getLocalClassName(), DatabaseUtils.dumpCursorToString(data));
         cursorAdapter.swapCursor(data);
     }
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-//        Log.d(this.getLocalClassName(), "onLoaderReset: ");
+        Log.d(this.getLocalClassName(), "onLoaderReset: ");
         cursorAdapter.swapCursor(null);
     }
 
     protected void finishEditing() {
+        Log.d(this.getLocalClassName(), " finishEditing running");
         setResult(RESULT_OK);
         finish();
     }
@@ -179,7 +206,7 @@ public class TermActivity extends AppCompatActivity
                 viewDetailsAction();
                 break;
             case android.R.id.home:
-//                Log.d(this.getLocalClassName(), "id.home selected");
+                Log.d(this.getLocalClassName(), "id.home selected");
                 finishEditing();
                 return true;
         }
@@ -189,12 +216,7 @@ public class TermActivity extends AppCompatActivity
         finishEditing();
     }
 
-
-
-
-
 //TODO these items only used for testing, perhaps repurpose insertCourse?
-
 
     protected void insertItem(String title, String start, String end, String status) {
         //ID, TITLE, MENTOR_ID, COURSE_TERM, START, END, STATUS
@@ -205,8 +227,8 @@ public class TermActivity extends AppCompatActivity
         values.put(CourseRepo.START, start);
         values.put(CourseRepo.END, end);
         values.put(CourseRepo.STATUS, status);
-        getContentResolver().insert(childUri, values);   //getContentResolver().insert(MyContentProvider.getTableUri(repoTableName), values);
-//        Log.d("MainActivity DL", "Inserted Note " + termUri.getLastPathSegment());
+        getContentResolver().insert(childUri, values);
+        Log.d("MainActivity DL", "Into " + childUri + " inserted "+ values.toString());
     }
     protected void insertSampleData() {
         //TODO remove this at completion

@@ -1,6 +1,10 @@
 package com.example.khaln.coursemanager;
 
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.Loader;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ListView;
@@ -15,7 +19,7 @@ public class CourseActivity extends TermActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_term);
+        setContentView(R.layout.activity_course);
 
         /*Set Instance Variables*/
         intent = getIntent();
@@ -26,9 +30,13 @@ public class CourseActivity extends TermActivity {
         childRepoTitle = AssessmentRepo.TITLE;
         childRepoID = AssessmentRepo.ID;
         childRepoTableName = AssessmentRepo.TABLE_NAME;
-        childsParentId = AssessmentRepo.COURSE_ID;
+        //childsParentId = AssessmentRepo.COURSE_ID; childsParentId = CourseRepo.TERM_ID;
         childUri = MyContentProvider.ASSESSMENT_URI;
-        childIntent = new Intent(this, AssessmentActivity.class);
+        Log.d(this.getLocalClassName(), "extra from intent: " +uri);
+        Log.d(this.getLocalClassName(), "childUri: " +childUri);
+        childClass = AssessmentActivity.class;
+        childClassDetails = AssessmentDetailsActivity.class;
+        childIntent = new Intent(this, childClass);
         detailsIntent = new Intent(this, CourseDetailsActivity.class);
 
         /*set cursor adapter*/
@@ -44,17 +52,29 @@ public class CourseActivity extends TermActivity {
         list.setOnItemClickListener(getChildActionClickListener());
 
         //get term title and set as text for titleTextView
-        TextView titleTextView = (TextView) findViewById(R.id.textViewTermTitle);
+        TextView titleTextView = (TextView) findViewById(R.id.textViewCourseTitle);
+        Log.d(this.getLocalClassName(), "repoTitle: " +repoTitle);
         titleTextView.setText(repoTitle);
 
         getLoaderManager().initLoader(0, null, this);
     }
-    /*
-    protected void viewDetailsAction() {
-        Log.d(this.getLocalClassName(), "Edit existing item of this type");
-        Intent viewDetailsIntent = detailsIntent;//new Intent(this, detailsActivityClass);
-        viewDetailsIntent.putExtra(repoTableName, uri);
-        startActivityForResult(viewDetailsIntent, EDITOR_REQUEST_CODE);
+/*
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        //String childUr = "";
+        Uri loaderChildUri = MyContentProvider.ASSESSMENT_URI;
+        String loaderChildsParentId = AssessmentRepo.COURSE_ID;
+        Log.d(this.getLocalClassName(), "loaderChildUri: " + loaderChildUri + " loaderChildsParentId: "+ loaderChildsParentId + " repoId: " + repoId);
+        return new CursorLoader(this, childUri, null, childsParentId + "=" + repoId, null, null);
     }
     */
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        String loaderId = intent.getStringExtra(CourseRepo.ID);
+        Uri loaderChildUri = MyContentProvider.ASSESSMENT_URI;
+        String loaderChildsParentId = AssessmentRepo.COURSE_ID;
+        Log.d(this.getLocalClassName(), "loaderChildUri: " + loaderChildUri + " loaderChildsParentId: "+ loaderChildsParentId + " loaderId: " + loaderId);
+        return new CursorLoader(this, loaderChildUri, null, loaderChildsParentId + "=" + loaderId, null, null);
+    }
+
 }

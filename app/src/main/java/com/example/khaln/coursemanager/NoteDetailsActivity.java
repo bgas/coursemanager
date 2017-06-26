@@ -30,7 +30,7 @@ public class NoteDetailsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_term_details);
+        setContentView(R.layout.activity_note_details);
 
         titleText = (EditText) findViewById(R.id.editTitle);
         startDate = (DatePicker) findViewById(R.id.startDatePicker);

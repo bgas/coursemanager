@@ -1,96 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView android:layout_width="match_parent"
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_height="wrap_content">
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingTop="16dp"
-    android:paddingBottom="16dp"
-    android:orientation="vertical"
-    tools:context="com.example.khaln.coursemanager.TermDetailsActivity">
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/title"
+        android:id="@+id/mentorName"
         android:layout_width="match_parent"
         android:layout_marginLeft="26dp"
         android:layout_marginRight="26dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:text="Title"
+        android:text="Name"
         android:gravity="top"
         />
-
     <EditText
-        android:id="@+id/editTitle"
+        android:id="@+id/editName"
         android:layout_width="match_parent"
         android:layout_marginLeft="26dp"
         android:layout_marginRight="26dp"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/title"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
         />
-
+    <TextView
+        android:id="@+id/email"
+        android:layout_width="match_parent"
+        android:layout_marginLeft="26dp"
+        android:layout_marginRight="26dp"
+        android:layout_height="wrap_content"
+        android:text="Email"
+        android:gravity="top"
+        />
     <EditText
-        android:id="@+id/editMentor"
+        android:id="@+id/editEmail"
         android:layout_width="match_parent"
         android:layout_marginLeft="26dp"
         android:layout_marginRight="26dp"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/title"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
         />
-
-
     <TextView
-        android:id="@+id/startDate"
+        android:id="@+id/phone"
         android:layout_width="match_parent"
         android:layout_marginLeft="26dp"
         android:layout_marginRight="26dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_below="@id/editTitle"
-        android:text="Start Date" />
-
-    <DatePicker
-        android:id="@+id/startDatePicker"
-        android:layout_width="match_parent"
-        android:layout_marginLeft="26dp"
-        android:layout_marginRight="26dp"
-        android:layout_height="85dp"
-        android:layout_centerHorizontal="true"
-        android:datePickerMode="spinner"
-        android:calendarViewShown="false"
-        android:layout_below="@id/startDate"
+        android:text="Phone"
+        android:gravity="top"
         />
-
-    <TextView
-        android:id="@+id/endDate"
+    <EditText
+        android:id="@+id/editPhone"
         android:layout_width="match_parent"
         android:layout_marginLeft="26dp"
         android:layout_marginRight="26dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:text="End Date"
-        android:layout_below="@id/startDatePicker"/>
-
-    <DatePicker
-        android:id="@+id/endDatePicker"
-        android:layout_width="match_parent"
-        android:layout_marginLeft="26dp"
-        android:layout_marginRight="26dp"
-        android:layout_height="85dp"
-        android:layout_centerHorizontal="true"
-        android:datePickerMode="spinner"
-        android:calendarViewShown="false"
-        android:layout_below="@id/endDate"
         />
+
+
 
 </LinearLayout>
-</ScrollView>
