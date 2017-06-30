@@ -50,6 +50,8 @@ public class CourseDetailsActivity extends AppCompatActivity implements LoaderMa
     protected String childRepoTableName;
     protected Intent childIntent;
     private String[] from = new String[3];
+    private Uri courseUri;
+    private int termId;
 
 
     @Override
@@ -68,21 +70,24 @@ public class CourseDetailsActivity extends AppCompatActivity implements LoaderMa
         childIntent = new Intent(this, MentorDetailsActivity.class);
         childRepoTableName = MentorRepo.TABLE_NAME;
 
-        Intent intent = getIntent();
-        Uri uri = intent.getParcelableExtra(CourseRepo.TABLE_NAME /*MyContentProvider.CONTENT_ITEM_TYPE*/);
-        Log.d(this.getLocalClassName(), "uri: "+uri);
 
         Cursor mentorCursor = getContentResolver().query(MyContentProvider.MENTOR_URI, MentorRepo.COLUMNS, null, null, null);
-        Log.d("CDA cursor", "mentorCursor: " + DatabaseUtils.dumpCursorToString(mentorCursor));
         mentorCursor.moveToFirst();
-        if (uri == null){
+
+        Intent intent = getIntent();
+        courseUri = intent.getParcelableExtra(CourseRepo.TABLE_NAME);
+
+        if (courseUri == null){
             action = Intent.ACTION_INSERT;
             setTitle(getString(R.string.new_course));
+            Uri termUri = intent.getParcelableExtra(TermRepo.TABLE_NAME);
+            termId = Integer.parseInt(termUri.getLastPathSegment());
         } else {
             action = Intent.ACTION_EDIT;
-            whereClauseCourse = CourseRepo.ID + "=" +uri.getLastPathSegment();
+            whereClauseCourse = CourseRepo.ID + "=" + courseUri.getLastPathSegment();
+            courseUri = intent.getParcelableExtra(CourseRepo.TABLE_NAME);
             //Get item values
-            Cursor courseCursor = getContentResolver().query(uri, CourseRepo.COLUMNS, "", null, null);
+            Cursor courseCursor = getContentResolver().query(courseUri, CourseRepo.COLUMNS, "", null, null);
             courseCursor.moveToFirst();
             //Get existing values from DB
             oldText = courseCursor.getString(courseCursor.getColumnIndex(CourseRepo.TITLE));
@@ -90,6 +95,7 @@ public class CourseDetailsActivity extends AppCompatActivity implements LoaderMa
             oldEnd = courseCursor.getString(courseCursor.getColumnIndex(CourseRepo.END)).split("-");
             oldMentorId = courseCursor.getInt(courseCursor.getColumnIndex(CourseRepo.MENTOR_ID));
             oldStatus = courseCursor.getString(courseCursor.getColumnIndex(CourseRepo.STATUS));
+            termId = courseCursor.getInt(courseCursor.getColumnIndex(CourseRepo.TERM_ID));
  //courseCursor.close();
             //Set values for course fields
             titleText.setText(oldText);
@@ -153,8 +159,9 @@ public class CourseDetailsActivity extends AppCompatActivity implements LoaderMa
         String newStart = startDate.getYear() + "-" + startDate.getMonth() + "-" + startDate.getDayOfMonth();
         String newEnd = endDate.getYear() + "-" + endDate.getMonth() + "-" + endDate.getDayOfMonth();
         String newStatus = courseStatus.getText().toString().trim();
-        Log.d(this.getLocalClassName(), "coursedetails finishEditing: " + getIntent().getStringExtra(CourseRepo.TABLE_NAME));
-        int termId = Integer.parseInt(getIntent().getStringExtra(CourseRepo.TABLE_NAME));
+//        Log.d(this.getLocalClassName(), "extras: "+getIntent().getParcelableExtra(CourseRepo.TABLE_NAME));
+//        Uri courseUri = getIntent().getParcelableExtra(CourseRepo.TABLE_NAME);
+//        int termId = Integer.parseInt(courseUri.getLastPathSegment());
         int newMentorId = oldMentorId;
         Log.d(this.getLocalClassName() + "finish editing", "newText: "+ newText + " newStart: + "+ newStart + " newEnd: "+newEnd);
         switch (action){
@@ -183,11 +190,12 @@ public class CourseDetailsActivity extends AppCompatActivity implements LoaderMa
         values.put(CourseRepo.MENTOR_ID, mentorId);
         values.put(CourseRepo.STATUS, status);
         values.put(CourseRepo.TERM_ID, termId);
-
         if (update) {
+            Log.d(this.getLocalClassName(), "Update itemUri: "+ itemUri +" values: "+ values.toString() + " whereClauseCourse: " + whereClauseCourse);
             getContentResolver().update(itemUri, values, whereClauseCourse, null);
             Toast.makeText(this, R.string.itemUpdated, Toast.LENGTH_SHORT).show();
         } else {
+            Log.d(this.getLocalClassName(), "Insert itemUri: "+ itemUri +" values: "+ values.toString());
              getContentResolver().insert(itemUri, values);
         }
         setResult(RESULT_OK);
@@ -195,7 +203,7 @@ public class CourseDetailsActivity extends AppCompatActivity implements LoaderMa
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
         if (resultCode == RESULT_OK){
-//            Log.d(this.getLocalClassName(), "activity result requestCode: " + requestCode + "data: " + data.getStringExtra(CourseRepo.MENTOR_ID)  );
+            Log.d(this.getLocalClassName(), "activity result requestCode: " + requestCode + "data: " + data.getStringExtra(CourseRepo.MENTOR_ID)  );
 
             int dataResult = data.getIntExtra(CourseRepo.MENTOR_ID, 0);
             //If dataResult has value, assign value as new mentor ID
@@ -208,9 +216,7 @@ public class CourseDetailsActivity extends AppCompatActivity implements LoaderMa
                 Log.d(this.getLocalClassName(), "itemUri: "+itemUri.toString()+" values: "+values.toString()+" whereClauseCourse: "+ whereClauseCourse);
                 getContentResolver().update(itemUri, values, whereClauseCourse, null);
 
-//                Cursor mentorIdUpdate = getContentResolver().query(itemUri, CourseRepo.COLUMNS, whereClauseCourse, null, null);
-//                mentorIdUpdate.moveToFirst();
-//                Log.d(this.getLocalClassName(), "mentorIdUpdate: " + DatabaseUtils.dumpCursorToString(mentorIdUpdate));
+
             }
             restartLoader();
         }

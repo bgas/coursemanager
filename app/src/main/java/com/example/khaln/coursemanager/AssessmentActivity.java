@@ -26,7 +26,7 @@ public class AssessmentActivity extends TermActivity {
         repoTitle = intent.getStringExtra(AssessmentRepo.TITLE);
         repoTableName = AssessmentRepo.TABLE_NAME;
         uri = intent.getParcelableExtra(repoTableName);
-        Log.d(this.getLocalClassName(), "extra from intent: " +uri);
+//        Log.d(this.getLocalClassName(), "extra from intent: " +uri);
         childRepoTitle = NoteRepo.TITLE;
         childRepoID = NoteRepo.ID;
         childRepoTableName = NoteRepo.TABLE_NAME;
@@ -34,7 +34,7 @@ public class AssessmentActivity extends TermActivity {
         childUri = MyContentProvider.NOTE_URI;
         childClass = NoteDetailsActivity.class;
         childClassDetails = NoteDetailsActivity.class;
-        detailsIntent = new Intent(this, childClass);
+        detailsIntent = new Intent(this, AssessmentDetailsActivity.class);
         childIntent = new Intent(this, childClassDetails);
 
         /*set cursor adapter*/
@@ -51,7 +51,7 @@ public class AssessmentActivity extends TermActivity {
 
         //get term title and set as text for titleTextView
         TextView titleTextView = (TextView) findViewById(R.id.textViewAssessmentTitle);
-        Log.d(this.getLocalClassName(), "repoTitle: " +repoTitle);
+//        Log.d(this.getLocalClassName(), "repoTitle: " +repoTitle);
         titleTextView.setText(repoTitle);
 
         getLoaderManager().initLoader(0, null, this);
@@ -63,7 +63,7 @@ public class AssessmentActivity extends TermActivity {
         String loaderId = intent.getStringExtra(AssessmentRepo.ID);
         Uri loaderChildUri = MyContentProvider.NOTE_URI;
         String loaderChildsParentId = NoteRepo.ASSESSMENT_ID;
-        Log.d(this.getLocalClassName(), "loaderChildUri: " + loaderChildUri + " loaderChildsParentId: "+ loaderChildsParentId + " loaderId: " + loaderId);
+//        Log.d(this.getLocalClassName(), "loaderChildUri: " + loaderChildUri + " loaderChildsParentId: "+ loaderChildsParentId + " loaderId: " + loaderId);
         return new CursorLoader(this, loaderChildUri, null, loaderChildsParentId + "=" + loaderId, null, null);
     }
 }

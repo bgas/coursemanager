@@ -38,20 +38,21 @@ public class TermDetailsActivity extends AppCompatActivity {
         itemUri = MyContentProvider.TERM_URI;
 
         Intent intent = getIntent();
-        Uri uri = intent.getParcelableExtra(TermRepo.TABLE_NAME /*MyContentProvider.CONTENT_ITEM_TYPE*/);
-//        Log.d(this.getLocalClassName() + "UI", "URI null? " + (uri == null) );
-        if (uri == null){
+        Uri termUri = intent.getParcelableExtra(TermRepo.TABLE_NAME );
+//        Log.d(this.getLocalClassName() + "UI", "URI null? " + (courseUri == null) );
+        if (termUri == null){
             action = Intent.ACTION_INSERT;
             setTitle(getString(R.string.new_term));
         } else {
             action = Intent.ACTION_EDIT;
-            whereClause = TermRepo.ID + "=" +uri.getLastPathSegment();
-//            Log.d("TActivity dl ui", "uri " + uri + " uri last path segment "+ uri.getLastPathSegment() + " whereClause " + whereClause);
+            whereClause = TermRepo.ID + "=" + termUri.getLastPathSegment();
+//            Log.d("TActivity dl ui", "courseUri " + courseUri + " courseUri last path segment "+ courseUri.getLastPathSegment() + " whereClause " + whereClause);
             //Get item values
-            Cursor cursor = getContentResolver().query(uri, TermRepo.COLUMNS, "", null, null);
+            Cursor cursor = getContentResolver().query(termUri, TermRepo.COLUMNS, "", null, null);
             cursor.moveToFirst();
             //Get existing values
 //            Log.d(this.getLocalClassName(), "fetching old values");
+
             oldText = cursor.getString(cursor.getColumnIndex(TermRepo.TITLE));
             oldStart = cursor.getString(cursor.getColumnIndex(TermRepo.START)).split("-");
             oldEnd = cursor.getString(cursor.getColumnIndex(TermRepo.END)).split("-");

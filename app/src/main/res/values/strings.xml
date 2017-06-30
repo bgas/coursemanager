@@ -33,6 +33,8 @@
     <string name="textviewcontains">Contains:</string>
     <string name="course">Course:</string>
     <string name="assessment">Assessment:</string>
+    <string name="setpicture">Set Picture</string>
+    <string name="new_note">New Note</string>
 
 
 </resources>

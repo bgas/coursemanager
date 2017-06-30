@@ -25,7 +25,7 @@ public class NoteRepo {
                 TITLE + " TEXT, " +
                 CREATED + " TEXT default CURRENT_TIMESTAMP, " +
                 TEXT + " TEXT, " +
-                PHOTO + " BLOB " +
+                PHOTO + " STRING " +
                 ")";
     }
 }

@@ -10,7 +10,6 @@ import android.util.Log;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.example.khaln.coursemanager.model.Assessment;
 import com.example.khaln.coursemanager.repo.AssessmentRepo;
 import com.example.khaln.coursemanager.repo.CourseRepo;
 
@@ -30,10 +29,7 @@ public class CourseActivity extends TermActivity {
         childRepoTitle = AssessmentRepo.TITLE;
         childRepoID = AssessmentRepo.ID;
         childRepoTableName = AssessmentRepo.TABLE_NAME;
-        //childsParentId = AssessmentRepo.COURSE_ID; childsParentId = CourseRepo.TERM_ID;
         childUri = MyContentProvider.ASSESSMENT_URI;
-        Log.d(this.getLocalClassName(), "extra from intent: " +uri);
-        Log.d(this.getLocalClassName(), "childUri: " +childUri);
         childClass = AssessmentActivity.class;
         childClassDetails = AssessmentDetailsActivity.class;
         childIntent = new Intent(this, childClass);
@@ -53,27 +49,18 @@ public class CourseActivity extends TermActivity {
 
         //get term title and set as text for titleTextView
         TextView titleTextView = (TextView) findViewById(R.id.textViewCourseTitle);
-        Log.d(this.getLocalClassName(), "repoTitle: " +repoTitle);
+//        Log.d(this.getLocalClassName(), "repoTitle: " +repoTitle);
         titleTextView.setText(repoTitle);
 
         getLoaderManager().initLoader(0, null, this);
     }
-/*
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        //String childUr = "";
-        Uri loaderChildUri = MyContentProvider.ASSESSMENT_URI;
-        String loaderChildsParentId = AssessmentRepo.COURSE_ID;
-        Log.d(this.getLocalClassName(), "loaderChildUri: " + loaderChildUri + " loaderChildsParentId: "+ loaderChildsParentId + " repoId: " + repoId);
-        return new CursorLoader(this, childUri, null, childsParentId + "=" + repoId, null, null);
-    }
-    */
+
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         String loaderId = intent.getStringExtra(CourseRepo.ID);
         Uri loaderChildUri = MyContentProvider.ASSESSMENT_URI;
         String loaderChildsParentId = AssessmentRepo.COURSE_ID;
-        Log.d(this.getLocalClassName(), "loaderChildUri: " + loaderChildUri + " loaderChildsParentId: "+ loaderChildsParentId + " loaderId: " + loaderId);
+//        Log.d(this.getLocalClassName(), "loaderChildUri: " + loaderChildUri + " loaderChildsParentId: "+ loaderChildsParentId + " loaderId: " + loaderId);
         return new CursorLoader(this, loaderChildUri, null, loaderChildsParentId + "=" + loaderId, null, null);
     }
 

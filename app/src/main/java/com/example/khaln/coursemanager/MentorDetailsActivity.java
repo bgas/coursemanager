@@ -42,18 +42,18 @@ public class MentorDetailsActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         itemUri = intent.getParcelableExtra(MentorRepo.TABLE_NAME);
-        Log.d(this.getLocalClassName(), "itemUri: "+ itemUri);
+//        Log.d(this.getLocalClassName(), "itemUri: "+ itemUri);
 
         if (itemUri == null/*itemUri.getLastPathSegment().contains("mentors")*/){
             action = Intent.ACTION_INSERT;
         } else {
             action = Intent.ACTION_EDIT;
             whereClause = MentorRepo.ID + "=" +itemUri.getLastPathSegment();
-            Log.d(this.getLocalClassName(), "edit mentor uri and whereclause: " + itemUri + "  :  " +whereClause);
+//            Log.d(this.getLocalClassName(), "edit mentor uri: " + itemUri + " and whereclause:  " +whereClause);
             //Get item values
             Cursor cursor = getContentResolver().query(itemUri, MentorRepo.COLUMNS, "", null, null);
             cursor.moveToFirst();
-            Log.d(this.getLocalClassName(), "cursor: " + cursor.getCount());
+//            Log.d(this.getLocalClassName(), "cursor: " + cursor.getCount());
             //Get existing values from DB
             oldName = cursor.getString(cursor.getColumnIndex(MentorRepo.TITLE));
             oldEmail = cursor.getString(cursor.getColumnIndex(MentorRepo.EMAIL));
@@ -101,23 +101,24 @@ public class MentorDetailsActivity extends AppCompatActivity {
         String newText = editNameText.getText().toString().trim();
         String emailText = editEmailText.getText().toString().trim();
         String phoneText = editPhoneText.getText().toString().trim();
-
+//        Log.d(this.getLocalClassName(), "finish edit running action: "+action);
         switch (action){
             case Intent.ACTION_INSERT:
                 if (newText.length() == 0){
                     setResult(RESULT_CANCELED);
                 } else{
-                    Log.d(this.getLocalClassName(), "action insert newText: "+ newText + " emailText: " + emailText + " phoneText: "+ phoneText);
+//                    Log.d(this.getLocalClassName(), "action insert newText: "+ newText + " emailText: " + emailText + " phoneText: "+ phoneText);
                     addUpdateItem(newText, emailText, phoneText, false);
                 }
                 break;
             case Intent.ACTION_EDIT:
-                if (oldName.equals(newText) && oldEmail.equals(emailText) && oldPhone.equals(phoneText) ){
-                    setResult(RESULT_CANCELED);
-                } else {
-                    Log.d(this.getLocalClassName(), "action edit newText: "+ newText + " emailText: "+ emailText + " phoneText: "+ phoneText);
+//                if (oldName.equals(newText) && oldEmail.equals(emailText) && oldPhone.equals(phoneText) ){
+//                    setResult(RESULT_CANCELED);
+//                } else {
+//                    Log.d(this.getLocalClassName(), "action edit newText: "+ newText + " emailText: "+ emailText + " phoneText: "+ phoneText);
                     addUpdateItem(newText, emailText, phoneText, true);
-                }
+//                }
+                break;
         }
         finish();
     }
