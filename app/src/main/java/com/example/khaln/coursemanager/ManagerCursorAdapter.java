@@ -55,14 +55,9 @@ public class ManagerCursorAdapter extends CursorAdapter {
         //pin values to view item to be passed as extra
         view.setTag(R.string.item_id_tag, itemId);
         view.setTag(R.string.item_title_tag, titleText);
-        Log.d(this.getClass().toString(), " itemId: " + itemId +  " titleText: " + titleText);
-        //Log.d(this.getClass().toString(), "cursor dump: "+ cursor.getString())
-
         if (from.length > 2){
-//            Log.d(this.getClass().toString(), "from [2]: " + from[2]);
             view.setBackgroundColor(Color.WHITE);
             if (from[2].equals(itemId)){
-//                Log.d(this.getClass().toString(), "greater than 2 and matches ID: " + from[2] + " itemId: " +itemId);
                 view.setBackgroundColor(Color.CYAN);
             }
         }

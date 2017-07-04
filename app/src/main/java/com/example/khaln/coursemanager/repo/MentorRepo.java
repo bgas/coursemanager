@@ -1,5 +1,7 @@
 package com.example.khaln.coursemanager.repo;
 
+import java.util.ArrayList;
+
 /**
  * Created by khaln on 5/20/17.
  */
@@ -23,5 +25,8 @@ public class MentorRepo {
                 PHONE + " TEXT default CURRENT_TIMESTAMP," +
                 EMAIL + " TEXT" +
                 ")";
+    }
+    public static ArrayList createArrayList(){
+        return new ArrayList();
     }
 }

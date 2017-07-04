@@ -33,7 +33,6 @@ public class TermList extends ActionBarActivity implements LoaderManager.LoaderC
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_term_list);
-        //Now being handled by cursorLoader Cursor cursor = getContentResolver().query(MyContentProvider.TERM_URI, TermRepo.COLUMNS, null, null, null, null);
         String[] from = {TermRepo.TITLE, TermRepo.ID};
         int[] to = {R.id.textViewItem};
         cursorAdapter = new ManagerCursorAdapter(this, R.layout.term_list_item, null, from, to, 0);
@@ -47,14 +46,8 @@ public class TermList extends ActionBarActivity implements LoaderManager.LoaderC
                 Intent intent = new Intent(TermList.this, TermActivity.class);
                 Uri uri = Uri.parse(MyContentProvider.TERM_URI + "/" + id);
                 intent.putExtra(TermRepo.TABLE_NAME, uri);
-
-//                HashMap tag = (HashMap) view.getTag();
-//                intent.putExtra(TermRepo.ID, (String) tag.get("id"));
-//                intent.putExtra(TermRepo.TITLE, (String) tag.get("titleText"));
                 intent.putExtra(TermRepo.ID, (String) view.getTag(R.string.item_id_tag));
                 intent.putExtra(TermRepo.TITLE, (String) view.getTag(R.string.item_title_tag));
-
-                //intent.putExtra(TermRepo.TITLE, termTitle);
                 startActivityForResult(intent, EDITOR_REQUEST_CODE);
             }
         });
@@ -64,7 +57,6 @@ public class TermList extends ActionBarActivity implements LoaderManager.LoaderC
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.d(this.getLocalClassName(), "isdestroyed: " + isDestroyed());
     }
 
     private void insertTerm(String title, String start, String end) {
@@ -72,9 +64,8 @@ public class TermList extends ActionBarActivity implements LoaderManager.LoaderC
         values.put(TermRepo.TITLE, title);
         values.put(TermRepo.START, start);
         values.put(TermRepo.END, end);
-        Uri termUri = getContentResolver().insert(MyContentProvider.TERM_URI, values);   //getContentResolver().insert(MyContentProvider.getTableUri(TermRepo.TABLE_NAME), values);
-        Log.d(this.getLocalClassName() +" DL", "Inserted Note " + termUri.getLastPathSegment());
-    }
+        Uri termUri = getContentResolver().insert(MyContentProvider.TERM_URI, values);
+         }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -87,18 +78,12 @@ public class TermList extends ActionBarActivity implements LoaderManager.LoaderC
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         switch (id) {
-            case R.id.action_create_sample:
-                insertSampleData();
-                break;
-            case R.id.action_delete_all:
-                deleteAllItems();
-                break;
+
         }
         return super.onOptionsItemSelected(item);
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
-        Log.d(this.getLocalClassName()+" activity result", "requestCode: " + requestCode + "resultCode: " + resultCode + "data: " + data  );
         if (requestCode == EDITOR_REQUEST_CODE && resultCode == RESULT_OK){
             restartLoader();
         }
@@ -128,34 +113,4 @@ public class TermList extends ActionBarActivity implements LoaderManager.LoaderC
         startActivityForResult(intent, EDITOR_REQUEST_CODE);
     }
 
-    private void deleteAllItems() {
-        //TODO remove this at completion
-        DialogInterface.OnClickListener dialogClickListener =
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int button) {
-                        if (button == DialogInterface.BUTTON_POSITIVE) {
-                            getContentResolver().delete(
-                                    MyContentProvider.TERM_URI, null, null
-                            );
-                            restartLoader();
-                            Toast.makeText(TermList.this,
-                                    getString(R.string.all_deleted),
-                                    Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                };
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(getString(R.string.are_you_sure))
-                .setPositiveButton(getString(android.R.string.yes), dialogClickListener)
-                .setNegativeButton(getString(android.R.string.no), dialogClickListener)
-                .show();
-    }
-    private void insertSampleData() {
-        //TODO remove this at completion
-        insertTerm("TermActivity Title", "2001-11-21", "2001-11-21");
-        insertTerm("TermActivity Title\nMulti-line", "2001-11-21", "2001-11-21");
-        insertTerm("TermActivity Title very long very very very very very very very very very very long", "2001-11-21", "2001-11-21");
-        restartLoader();
-    }
 }

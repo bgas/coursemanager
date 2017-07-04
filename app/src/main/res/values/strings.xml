@@ -30,11 +30,15 @@
     <string name="new_assessment">New Assessment</string>
     <string name="term">Term:</string>
     <string name="textview">TextView</string>
-    <string name="textviewcontains">Contains:</string>
     <string name="course">Course:</string>
     <string name="assessment">Assessment:</string>
     <string name="setpicture">Set Picture</string>
     <string name="new_note">New Note</string>
+    <string name="share_note_text">Share Note Text</string>
+    <string name="contains_courses">Contains Courses:</string>
+    <string name="contains_assessments">Contains Assessments:</string>
+    <string name="itemWithSubsNotDeletable">Item has sub-items, cannot be deleted</string>
+    <string name="_24_hour_reminder">24 hour reminder</string>
 
 
 </resources>

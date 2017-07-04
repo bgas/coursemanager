@@ -56,6 +56,13 @@
         android:inputType="textMultiLine" />
 
     <Button
+        android:id="@+id/button2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/share_note_text"
+        android:onClick="sendText"/>
+
+    <Button
         android:id="@+id/button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

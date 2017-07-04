@@ -1,6 +1,7 @@
 package com.example.khaln.coursemanager;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -54,18 +55,15 @@ public class NoteDetailsActivity extends AppCompatActivity {
 
         intent = getIntent();
         Uri noteUri = intent.getParcelableExtra(NoteRepo.TABLE_NAME);
-        Log.d(this.getLocalClassName() + "UI", "URI null? " + (noteUri == null) );
-        Log.d(this.getLocalClassName() +" intent extras", getIntent().getExtras().toString());
 
-        if (noteUri == null){
+        if (noteUri == null) {
             action = Intent.ACTION_INSERT;
             setTitle(getString(R.string.new_note));
-//            assessmentId = Integer.parseInt(getIntent().getStringExtra(NoteRepo.TABLE_NAME));
             Uri assessmentUri = intent.getParcelableExtra(AssessmentRepo.TABLE_NAME);
             assessmentId = Integer.parseInt(assessmentUri.getLastPathSegment());
         } else {
             action = Intent.ACTION_EDIT;
-            whereClause = AssessmentRepo.ID + "=" +noteUri.getLastPathSegment();
+            whereClause = AssessmentRepo.ID + "=" + noteUri.getLastPathSegment();
             Uri parentUri = getIntent().getParcelableExtra(NoteRepo.TABLE_NAME);
             assessmentId = Integer.parseInt(parentUri.getLastPathSegment());
             //Get item values
@@ -79,6 +77,7 @@ public class NoteDetailsActivity extends AppCompatActivity {
             if (oldPhotoString != null) {
                 oldPhotoUri = Uri.parse(oldPhotoString);
                 myImageView.setImageURI(oldPhotoUri);
+                mCurrentPhotoPath = oldPhotoString;
             }
 
             //Set values for various fields
@@ -87,15 +86,12 @@ public class NoteDetailsActivity extends AppCompatActivity {
             bodyText.setText(oldBodyText);
             titleText.requestFocus();
 
-            //TODO set image as path
-//            Bitmap imageBitmap = (Bitmap) extras.get("data");
-//            myImageView.setImageBitmap(imageBitmap);
         }
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu){
-        if (action.equals(Intent.ACTION_EDIT)){
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if (action.equals(Intent.ACTION_EDIT)) {
             getMenuInflater().inflate(R.menu.menu_editor, menu);
         }
         return true;
@@ -141,18 +137,14 @@ public class NoteDetailsActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK) {
-//            Log.d(this.getLocalClassName(), data.toString());
-//            Bundle extras = data.getExtras();
-//            Bitmap imageBitmap = (Bitmap) extras.get("data");
-//            myImageView.setImageBitmap(imageBitmap);
             myImageView.setImageURI(Uri.parse(mCurrentPhotoPath));
         }
     }
 
 
-    public boolean onOptionsItemSelected(MenuItem item){
-        int id=item.getItemId();
-        switch (item.getItemId()){
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch (item.getItemId()) {
             case android.R.id.home:
                 finishEditing();
                 break;
@@ -164,33 +156,26 @@ public class NoteDetailsActivity extends AppCompatActivity {
     }
 
     private void finishEditing() {
-//        int assessmentId = action.equals(intent.ACTION_INSERT) ? Integer.parseInt(getIntent().getStringExtra(NoteRepo.TABLE_NAME)) : 0;
         String newTitle = titleText.getText().toString().trim();
-        String newBodyText =  bodyText.getText().toString().trim();
-        Log.d(this.getLocalClassName(), getIntent().getExtras().toString());
-        Log.d(this.getLocalClassName() + " finishEditing", "assessmentId: "+ assessmentId); // + " newStart: + "+ newStart + " newEnd: "+newEnd);
-        switch (action){
+        String newBodyText = bodyText.getText().toString().trim();
+        switch (action) {
             case Intent.ACTION_INSERT:
-                if (newTitle.length() == 0){
+                if (newTitle.length() == 0) {
                     setResult(RESULT_CANCELED);
-                } else{
-                    Log.d(this.getLocalClassName(), "inserting new Item");
+                } else {
                     addUpdateItem(newTitle, newBodyText, mCurrentPhotoPath, assessmentId, false);
-//                    insertNote(newTitle, newBodyText, mCurrentPhotoPath /* , newEnd*/);
                 }
                 break;
             case Intent.ACTION_EDIT:
-                if (newTitle.length() == 0){
-                   deleteItem();
-                } else if (oldTitleText.equals(newTitle) && oldPhotoUri.equals(mCurrentPhotoPath) && oldBodyText.equals(newBodyText)  /*&& oldEnd.equals(newEnd) */){
-                    setResult(RESULT_CANCELED);
+                if (newTitle.length() == 0) {
+                    deleteItem();
                 } else {
                     addUpdateItem(newTitle, newBodyText, mCurrentPhotoPath, assessmentId, true);
-//                    updateNote(newTitle, newBodyText, mCurrentPhotoPath /*, newEnd*/);
                 }
         }
         finish();
     }
+
 
     private void addUpdateItem(String title, String text, String photo, int assessmentId, Boolean update) {
         ContentValues values = new ContentValues();
@@ -198,11 +183,12 @@ public class NoteDetailsActivity extends AppCompatActivity {
         values.put(NoteRepo.TEXT, text);
         values.put(NoteRepo.PHOTO, photo);
         values.put(NoteRepo.ASSESSMENT_ID, assessmentId);
-        Log.d(this.getLocalClassName(), "update: " + update + " into uri: " + itemUri +" insert values: "+ values);
         if (update) {
-            Log.d(this.getLocalClassName(), "whereClause: "+ whereClause);
             getContentResolver().update(itemUri, values, whereClause, null);
             Toast.makeText(this, R.string.itemUpdated, Toast.LENGTH_SHORT).show();
+            Intent updateIntent = new Intent();
+            updateIntent.putExtra("newTitle", title);
+            setResult(RESULT_OK, updateIntent);
         } else {
             getContentResolver().insert(itemUri, values);
         }
@@ -211,24 +197,25 @@ public class NoteDetailsActivity extends AppCompatActivity {
 
     }
 
-/*
-    private void updateNote(String title, String mCurrentPhotoPath) {
-        Log.d("TermDetailsActivity UI", "title: " + title );
-        ContentValues values = new ContentValues();
-        values.put(TermRepo.TITLE, title);
-        getContentResolver().update(MyContentProvider.TERM_URI, values, whereClause, null);
-        Toast.makeText(this, R.string.itemUpdated, Toast.LENGTH_SHORT).show();
-        setResult(RESULT_OK);
+    public void sendText(View view) {
+
+        String text = titleText.getText().toString().trim() + ": " + bodyText.getText().toString().trim();
+        Intent shareIntent = new Intent();
+        shareIntent.setAction(Intent.ACTION_SEND);
+        shareIntent.putExtra(Intent.EXTRA_TEXT, text);
+        try {
+            Uri pictureUri = Uri.parse("file://" + mCurrentPhotoPath);
+            shareIntent.putExtra(Intent.EXTRA_STREAM, pictureUri);
+            shareIntent.setType("image/jpg");
+            shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            startActivity(Intent.createChooser(shareIntent, "Share image..."));
+        } catch (NullPointerException e){
+            shareIntent.setType("text/plain");
+            startActivity(Intent.createChooser(shareIntent, "Share text..."));
+        }
+
     }
 
-    private void insertNote(String title, String mCurrentPhotoPath) {
-        //TODO repeats code from Main Activity be+ DRY
-        ContentValues values = new ContentValues();
-        values.put(TermRepo.TITLE, title);
-        getContentResolver().insert(MyContentProvider.TERM_URI, values);
-        setResult(RESULT_OK);
-    }
-*/
     private void deleteItem() {
         getContentResolver().delete(MyContentProvider.NOTE_URI, whereClause, null);
         Toast.makeText(this, R.string.item_deleted, Toast.LENGTH_SHORT).show();

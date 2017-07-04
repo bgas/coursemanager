@@ -15,6 +15,8 @@ import android.widget.Toast;
 import com.example.khaln.coursemanager.repo.CourseRepo;
 import com.example.khaln.coursemanager.repo.MentorRepo;
 
+import java.util.ArrayList;
+
 public class MentorDetailsActivity extends AppCompatActivity {
 
 
@@ -23,6 +25,7 @@ public class MentorDetailsActivity extends AppCompatActivity {
     private EditText editEmailText;
     private EditText editPhoneText;
     private String whereClause;
+    private ArrayList parentIDsList;
     private String oldName;
     private String oldEmail;
     private String oldPhone;
@@ -39,6 +42,7 @@ public class MentorDetailsActivity extends AppCompatActivity {
         editEmailText = (EditText) findViewById(R.id.editEmail);
         editPhoneText = (EditText) findViewById(R.id.editPhone);
 
+        parentIDsList = MentorRepo.createArrayList();
 
         Intent intent = getIntent();
         itemUri = intent.getParcelableExtra(MentorRepo.TABLE_NAME);
@@ -132,8 +136,6 @@ public class MentorDetailsActivity extends AppCompatActivity {
         values.put(MentorRepo.EMAIL, email);
         values.put(MentorRepo.PHONE, phone);
 
-        //parentIntent.putExtra(CourseRepo.MENTOR_ID, Integer.parseInt(mentorIntUri.getLastPathSegment()));
-        //Log.d(this.getLocalClassName(), "add update isUpdate: " + update);
         if (update) {
             getContentResolver().update(uri, values, whereClause, null);
             mentorId = Integer.parseInt(itemUri.getLastPathSegment());
@@ -142,7 +144,6 @@ public class MentorDetailsActivity extends AppCompatActivity {
             Uri newMentorUri = getContentResolver().insert(uri, values);
             mentorId = Integer.parseInt(newMentorUri.getLastPathSegment());
         }
-        Log.d(this.getLocalClassName(), "addUpdateItem complete. mentorId: " + mentorId + " update: " + update + " values: "+values.toString());
         parentIntent.putExtra(CourseRepo.MENTOR_ID, mentorId);
         setResult(RESULT_OK, parentIntent);
     }

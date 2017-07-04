@@ -23,6 +23,7 @@ public class AssessmentActivity extends TermActivity {
         /*Set Instance Variables*/
         intent = getIntent();
         repoId = intent.getStringExtra(AssessmentRepo.ID);
+        repoTitleLocation = AssessmentRepo.TITLE;
         repoTitle = intent.getStringExtra(AssessmentRepo.TITLE);
         repoTableName = AssessmentRepo.TABLE_NAME;
         uri = intent.getParcelableExtra(repoTableName);
@@ -43,14 +44,14 @@ public class AssessmentActivity extends TermActivity {
         cursorAdapter = new ManagerCursorAdapter(this, R.layout.course_list_item, null, from, to, 0);
 
         /*set list adapter*/
-        ListView list = (ListView) findViewById(android.R.id.list);
+        list = (ListView) findViewById(android.R.id.list);
         list.setAdapter(cursorAdapter);
 
         //Set list-item listener to open item on click
         list.setOnItemClickListener(getChildActionClickListener());
 
         //get term title and set as text for titleTextView
-        TextView titleTextView = (TextView) findViewById(R.id.textViewAssessmentTitle);
+        titleTextView = (TextView) findViewById(R.id.textViewAssessmentTitle);
 //        Log.d(this.getLocalClassName(), "repoTitle: " +repoTitle);
         titleTextView.setText(repoTitle);
 

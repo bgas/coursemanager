@@ -36,7 +36,6 @@ public class MyContentProvider extends ContentProvider {
 
     public static Uri getTableUri(String repoName) {
         Uri result = Uri.parse("content://" + AUTHORITY + "/" + repoName);
-//        Log.d("MyContentProvider DL", result.toString());
         return result;
     }
 
@@ -145,7 +144,6 @@ public class MyContentProvider extends ContentProvider {
         //Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder
         String columnStretch = "";
         for (String column : columns){ columnStretch += column + ", "; }
-        Log.d(this.getClass().toString() + " dl", " table: " +table + " columns: "  + columnStretch + " selection: "+ selection);
         return database.query(table, columns, selection, null, null, null, null);
     }
 
@@ -185,7 +183,6 @@ public class MyContentProvider extends ContentProvider {
                 break;
             default: throw new SQLException("Failed to insert " + uri);
         }
-        Log.d("MyContentProvider DL", "table: "+ table);
 
         long id = database.insert(table, null, values);
         return Uri.parse(table + "/" + id);
@@ -219,7 +216,6 @@ public class MyContentProvider extends ContentProvider {
 
     @Override
     public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
-        Log.d(this.getClass().toString(), "uri: "+ uri + " match result: " + sUriMatcher.match(uri) + " selction: " +selection + " args: " + Arrays.toString(selectionArgs));
         String table;
         switch (sUriMatcher.match(uri)) {
             case TERM:
@@ -235,12 +231,10 @@ public class MyContentProvider extends ContentProvider {
                 table = NoteRepo.TABLE_NAME;
                 break;
             case MENTOR:
-                Log.d(this.getClass().toString(), "mentor update case");
                 table = MentorRepo.TABLE_NAME;
                 break;
             default: throw new SQLException("Failed to update: " + uri +" case: "+sUriMatcher.match(uri));
         }
-        Log.d(this.getClass().toString(), "values: "+ values.toString()+" selection: "+selection+" selectionArgs: "+ Arrays.toString(selectionArgs));
         return database.update(table, values, selection, selectionArgs);
     }
 }

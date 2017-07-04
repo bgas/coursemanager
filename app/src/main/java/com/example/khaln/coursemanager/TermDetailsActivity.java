@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.DatePicker;
@@ -25,6 +26,7 @@ public class TermDetailsActivity extends AppCompatActivity {
     private String[] oldStart;
     private String[] oldEnd;
     protected Uri itemUri;
+    private Boolean hasChildren = false;
 
 
     @Override
@@ -46,6 +48,7 @@ public class TermDetailsActivity extends AppCompatActivity {
         } else {
             action = Intent.ACTION_EDIT;
             whereClause = TermRepo.ID + "=" + termUri.getLastPathSegment();
+            hasChildren = intent.getBooleanExtra("hasChildren", false);
 //            Log.d("TActivity dl ui", "courseUri " + courseUri + " courseUri last path segment "+ courseUri.getLastPathSegment() + " whereClause " + whereClause);
             //Get item values
             Cursor cursor = getContentResolver().query(termUri, TermRepo.COLUMNS, "", null, null);
@@ -88,10 +91,17 @@ public class TermDetailsActivity extends AppCompatActivity {
 
 
     private void deleteItem() {
-        getContentResolver().delete(itemUri, whereClause, null);
-        Toast.makeText(this, R.string.item_deleted, Toast.LENGTH_SHORT).show();
-        setResult(RESULT_OK);
-        finish();
+        if(!hasChildren) {
+            getContentResolver().delete(itemUri, whereClause, null);
+            Toast.makeText(this, R.string.item_deleted, Toast.LENGTH_SHORT).show();
+            Intent deleteIntent = new Intent();
+            //TODO implement delete
+            deleteIntent.putExtra("itemDeleted", true);
+            setResult(RESULT_OK, deleteIntent);
+            finish();
+        }else{
+            Toast.makeText(this, R.string.itemWithSubsNotDeletable, Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void finishEditing() {
@@ -124,12 +134,16 @@ public class TermDetailsActivity extends AppCompatActivity {
         values.put(TermRepo.START, startDate);
         values.put(TermRepo.END, endDate);
         if (update) {
+            Log.d(this.getLocalClassName(), "Update: true itemUri: "+ itemUri +" values: "+ values.toString() + " whereClause: " + whereClause);
             getContentResolver().update(itemUri, values, whereClause, null);
             Toast.makeText(this, R.string.itemUpdated, Toast.LENGTH_SHORT).show();
+            Intent updateIntent = new Intent();
+            updateIntent.putExtra("newTitle", title);
+            setResult(RESULT_OK, updateIntent);
         } else {
             getContentResolver().insert(itemUri, values);
+            setResult(RESULT_OK);
         }
-        setResult(RESULT_OK);
     }
 
     public void onBackPressed(){

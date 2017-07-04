@@ -1,6 +1,9 @@
 package com.example.khaln.coursemanager;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -9,17 +12,23 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.Toast;
 
 
 import com.example.khaln.coursemanager.repo.AssessmentRepo;
 import com.example.khaln.coursemanager.repo.CourseRepo;
 
+import java.text.DateFormat;
+import java.util.Calendar;
+
 public class AssessmentDetailsActivity extends AppCompatActivity {
 
     private String action;
+    private Switch switchDue;
     private EditText titleText;
     private DatePicker endDate;
     private String whereClause;
@@ -30,6 +39,7 @@ public class AssessmentDetailsActivity extends AppCompatActivity {
     private Uri assessmentUri;
     private int assessmentId;
     private int courseId;
+    private Boolean hasChildren = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +49,7 @@ public class AssessmentDetailsActivity extends AppCompatActivity {
         titleText = (EditText) findViewById(R.id.editTitle);
         endDate = (DatePicker) findViewById(R.id.endDatePicker);
         itemUri = MyContentProvider.ASSESSMENT_URI;
+        switchDue = (Switch) findViewById(R.id.switchDueDate);
 
 
 //        assessmentUri = intent.hasExtra(CourseRepo.TABLE_NAME) ? (Uri) intent.getParcelableExtra(CourseRepo.TABLE_NAME) : (Uri) intent.getParcelableExtra(AssessmentRepo.TABLE_NAME); /*MyContentProvider.CONTENT_ITEM_TYPE*/
@@ -54,7 +65,7 @@ public class AssessmentDetailsActivity extends AppCompatActivity {
             action = Intent.ACTION_EDIT;
             assessmentId = Integer.parseInt(assessmentUri.getLastPathSegment());
             whereClause = AssessmentRepo.ID + "=" + assessmentUri.getLastPathSegment();
-            Log.d(this.getLocalClassName(), "whereClause: "+whereClause);
+            hasChildren = intent.getBooleanExtra("hasChildren", false);
            //Get item values
             Cursor cursor = getContentResolver().query(assessmentUri, AssessmentRepo.COLUMNS, "", null, null);
             cursor.moveToFirst();
@@ -91,10 +102,17 @@ public class AssessmentDetailsActivity extends AppCompatActivity {
     }
 
     private void deleteItem() {
-        getContentResolver().delete(itemUri, whereClause, null);
-        Toast.makeText(this, R.string.item_deleted, Toast.LENGTH_SHORT).show();
-        setResult(RESULT_OK);
-        finish();
+        if(!hasChildren) {
+            getContentResolver().delete(itemUri, whereClause, null);
+            Toast.makeText(this, R.string.item_deleted, Toast.LENGTH_SHORT).show();
+            Intent deleteIntent = new Intent();
+            //TODO implement delete return to parents parent
+            deleteIntent.putExtra("itemDeleted", true);
+            setResult(RESULT_OK, deleteIntent);
+            finish();
+        }else{
+            Toast.makeText(this, R.string.itemWithSubsNotDeletable, Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void finishEditing() {
@@ -121,26 +139,69 @@ public class AssessmentDetailsActivity extends AppCompatActivity {
     }
 
     private void addUpdateItem(String title, String endDate, int courseId, Boolean update) {
+        scheduleAlarm(switchDue);
         ContentValues values = new ContentValues();
         values.put(AssessmentRepo.TITLE, title);
         values.put(AssessmentRepo.END, endDate);
         values.put(AssessmentRepo.COURSE_ID, courseId);
-        Log.d(this.getLocalClassName()+"addUpdate", "assessmentUri: "+ assessmentUri);
-        Log.d(this.getLocalClassName()+"addUpdate", "itemUri: "+ itemUri);
-        Log.d(this.getLocalClassName()+"addUpdate", "values: " + values);
-        Log.d(this.getLocalClassName()+"addUpdate", "courseID: "+ AssessmentRepo.COURSE_ID+"="+courseId);
         if (update) {
-            Log.d(this.getLocalClassName(), "Update itemUri: "+ itemUri +" values: "+ values.toString() + " whereClauseCourse: " + whereClause);
-            //getContentResolver().update(itemUri, values, whereClauseCourse, null);
             getContentResolver().update(itemUri, values, whereClause/*AssessmentRepo.COURSE_ID+"="+courseId*/, null);
             Toast.makeText(this, R.string.itemUpdated, Toast.LENGTH_SHORT).show();
+            Intent updateIntent = new Intent();
+            updateIntent.putExtra("newTitle", title);
+            setResult(RESULT_OK, updateIntent);
         } else {
-            Log.d(this.getLocalClassName(), "Insert itemUri: "+ itemUri +" values: "+ values.toString());
             getContentResolver().insert(itemUri, values);
+            setResult(RESULT_OK);
         }
-        setResult(RESULT_OK);
-
     }
+    public void scheduleAlarm(View v) {
+        Switch reminder = (Switch) v;
+        if (reminder.isChecked()) {
+            Calendar dueDate = Calendar.getInstance();
+            dueDate.set(endDate.getYear(), endDate.getMonth(), endDate.getDayOfMonth());
+            long dueDateMili = dueDate.getTimeInMillis() - 24*60*60*1000;
+            // Create an Intent and set the class that will execute when the Alarm triggers. Here we have
+            Intent intentAlarm = new Intent(this, MyAlarmReceiver.class);
+            intentAlarm.putExtra("alarmMessage", titleText.getText().toString().trim() + " due in 24 hours");
+            // Get the Alarm Service.
+            AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+            // Set the alarm for a particular time.
+            alarmManager.set(AlarmManager.RTC_WAKEUP, dueDateMili, PendingIntent.getBroadcast(this, 1, intentAlarm, PendingIntent.FLAG_UPDATE_CURRENT));
+            Toast.makeText(this, "Alarm Scheduled", Toast.LENGTH_LONG).show();
+        }
+    }
+
+/*
+    public void scheduleAlarm(View v)
+    {
+
+        //Set a notification in 7 days
+        Calendar sevendayalarm = Calendar.getInstance();
+        sevendayalarm.add(Calendar.DATE, 7);
+        Intent intent = new Intent(this, Receiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 001, intent, 0);
+
+        AlarmManager am = (AlarmManager)getSystemService(ALARM_SERVICE);
+        am.set(AlarmManager.RTC_WAKEUP, sevendayalarm.getTimeInMillis(), pendingIntent);
+        // The time at which the alarm will be scheduled. Here the alarm is scheduled for 1 day from the current time.
+        // We fetch the current time in milliseconds and add 1 day's time
+        // i.e. 24*60*60*1000 = 86,400,000 milliseconds in a day.
+
+        Long time = new GregorianCalendar().getTimeInMillis()+24*60*60*1000;
+
+        // Create an Intent and set the class that will execute when the Alarm triggers. Here we have
+        // specified MyAlarmReceiver in the Intent. The onReceive() method of this class will execute when the broadcast from your alarm is received.
+        Intent intentAlarm = new Intent(this, MyAlarmReceiver.class);
+
+        // Get the Alarm Service.
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+        // Set the alarm for a particular time.
+        alarmManager.set(AlarmManager.RTC_WAKEUP, time, PendingIntent.getBroadcast(this, 1, intentAlarm, PendingIntent.FLAG_UPDATE_CURRENT));
+        Toast.makeText(this, "Alarm Scheduled for Tomorrow", Toast.LENGTH_LONG).show();
+    }
+*/
 
     public void onBackPressed(){
         finishEditing();

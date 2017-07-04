@@ -1,7 +1,10 @@
 package com.example.khaln.coursemanager;
 
+import android.app.AlarmManager;
 import android.app.LoaderManager;
+import android.app.PendingIntent;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
@@ -19,13 +22,16 @@ import android.widget.CursorAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import com.example.khaln.coursemanager.repo.CourseRepo;
 import com.example.khaln.coursemanager.repo.MentorRepo;
 import com.example.khaln.coursemanager.repo.TermRepo;
 
+import java.text.DateFormat;
 import java.util.Arrays;
+import java.util.Calendar;
 
 public class CourseDetailsActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -52,6 +58,7 @@ public class CourseDetailsActivity extends AppCompatActivity implements LoaderMa
     private String[] from = new String[3];
     private Uri courseUri;
     private int termId;
+    private Boolean hasChildren = false;
 
 
     @Override
@@ -85,6 +92,7 @@ public class CourseDetailsActivity extends AppCompatActivity implements LoaderMa
         } else {
             action = Intent.ACTION_EDIT;
             whereClauseCourse = CourseRepo.ID + "=" + courseUri.getLastPathSegment();
+            hasChildren = intent.getBooleanExtra("hasChildren", false);
             courseUri = intent.getParcelableExtra(CourseRepo.TABLE_NAME);
             //Get item values
             Cursor courseCursor = getContentResolver().query(courseUri, CourseRepo.COLUMNS, "", null, null);
@@ -112,7 +120,6 @@ public class CourseDetailsActivity extends AppCompatActivity implements LoaderMa
         from[1] = childRepoID;
         from[2] = ""+oldMentorId;
         //from = {childRepoTitle, childRepoID, ""+oldMentorId};
-        Log.d(this.getLocalClassName(), "from: " + Arrays.toString(from));
         int[] to = {R.id.textViewItem};
         cursorAdapter = new ManagerCursorAdapter(this, R.layout.mentor_list_item, null, from, to, 0);
         /*set list adapter*/
@@ -148,10 +155,17 @@ public class CourseDetailsActivity extends AppCompatActivity implements LoaderMa
     }
 
     private void deleteItem() {
-        getContentResolver().delete(itemUri, whereClauseCourse, null);
-        Toast.makeText(this, R.string.item_deleted, Toast.LENGTH_SHORT).show();
-        setResult(RESULT_OK);
-        finish();
+        if(!hasChildren) {
+            getContentResolver().delete(itemUri, whereClauseCourse, null);
+            Toast.makeText(this, R.string.item_deleted, Toast.LENGTH_SHORT).show();
+            Intent deleteIntent = new Intent();
+            //TODO implement delete return to parents parent
+            deleteIntent.putExtra("itemDeleted", true);
+            setResult(RESULT_OK, deleteIntent);
+            finish();
+        }else{
+            Toast.makeText(this, R.string.itemWithSubsNotDeletable, Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void finishEditing() {
@@ -159,11 +173,7 @@ public class CourseDetailsActivity extends AppCompatActivity implements LoaderMa
         String newStart = startDate.getYear() + "-" + startDate.getMonth() + "-" + startDate.getDayOfMonth();
         String newEnd = endDate.getYear() + "-" + endDate.getMonth() + "-" + endDate.getDayOfMonth();
         String newStatus = courseStatus.getText().toString().trim();
-//        Log.d(this.getLocalClassName(), "extras: "+getIntent().getParcelableExtra(CourseRepo.TABLE_NAME));
-//        Uri courseUri = getIntent().getParcelableExtra(CourseRepo.TABLE_NAME);
-//        int termId = Integer.parseInt(courseUri.getLastPathSegment());
         int newMentorId = oldMentorId;
-        Log.d(this.getLocalClassName() + "finish editing", "newText: "+ newText + " newStart: + "+ newStart + " newEnd: "+newEnd);
         switch (action){
             case Intent.ACTION_INSERT:
                 if (newText.length() == 0){
@@ -183,6 +193,8 @@ public class CourseDetailsActivity extends AppCompatActivity implements LoaderMa
     }
 
     private void addUpdateItem(String title, String start, String end, int mentorId, String status, int termId, Boolean update) {
+        scheduleAlarmEnd(findViewById(R.id.switchEndReminder));
+        scheduleAlarmStart(findViewById(R.id.switchStartReminder));
         ContentValues values = new ContentValues();
         values.put(CourseRepo.TITLE, title);
         values.put(CourseRepo.START, start);
@@ -191,29 +203,27 @@ public class CourseDetailsActivity extends AppCompatActivity implements LoaderMa
         values.put(CourseRepo.STATUS, status);
         values.put(CourseRepo.TERM_ID, termId);
         if (update) {
-            Log.d(this.getLocalClassName(), "Update itemUri: "+ itemUri +" values: "+ values.toString() + " whereClauseCourse: " + whereClauseCourse);
             getContentResolver().update(itemUri, values, whereClauseCourse, null);
             Toast.makeText(this, R.string.itemUpdated, Toast.LENGTH_SHORT).show();
+            Intent updateIntent = new Intent();
+            updateIntent.putExtra("newTitle", title);
+            setResult(RESULT_OK, updateIntent);
         } else {
-            Log.d(this.getLocalClassName(), "Insert itemUri: "+ itemUri +" values: "+ values.toString());
-             getContentResolver().insert(itemUri, values);
+            getContentResolver().insert(itemUri, values);
+            setResult(RESULT_OK);
         }
-        setResult(RESULT_OK);
+//        setResult(RESULT_OK);
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
         if (resultCode == RESULT_OK){
-            Log.d(this.getLocalClassName(), "activity result requestCode: " + requestCode + "data: " + data.getStringExtra(CourseRepo.MENTOR_ID)  );
-
             int dataResult = data.getIntExtra(CourseRepo.MENTOR_ID, 0);
             //If dataResult has value, assign value as new mentor ID
-            Log.d(this.getLocalClassName(), "dataResult: "+dataResult);
             if (0 != dataResult){
                 oldMentorId = dataResult;
                 from[2] = ""+dataResult;
                 ContentValues values = new ContentValues();
                 values.put(CourseRepo.MENTOR_ID, dataResult);
-                Log.d(this.getLocalClassName(), "itemUri: "+itemUri.toString()+" values: "+values.toString()+" whereClauseCourse: "+ whereClauseCourse);
                 getContentResolver().update(itemUri, values, whereClauseCourse, null);
 
 
@@ -227,8 +237,7 @@ public class CourseDetailsActivity extends AppCompatActivity implements LoaderMa
         AdapterView.OnItemClickListener listener = new AdapterView.OnItemClickListener(){
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int Position, long id){
- //               Log.d(this.getClass().toString(), "this equals termactivity.this: "+ this.equals(TermDetailsActivity.class) + " this.getClass equals termactivity.this: "+ this.getClass().equals(TermDetailsActivity.class));
-                Uri childIDUri = Uri.parse(childUri + "/" + id);
+                 Uri childIDUri = Uri.parse(childUri + "/" + id);
                 childIntent.putExtra(childRepoTableName, childIDUri);
                 childIntent.putExtra(childRepoID, (String) view.getTag(R.string.item_id_tag));
                 childIntent.putExtra(childRepoTitle, (String) view.getTag(R.string.item_title_tag));
@@ -244,7 +253,6 @@ public class CourseDetailsActivity extends AppCompatActivity implements LoaderMa
 
 
     private void restartLoader() {
-        Log.d(this.getLocalClassName(), "restart loader");
         getLoaderManager().restartLoader(0, null, this);
     }
 
@@ -255,22 +263,48 @@ public class CourseDetailsActivity extends AppCompatActivity implements LoaderMa
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        Log.d(this.getLocalClassName(), "Loader running childUri: "+ childUri);
-        //return new CursorLoader(this, childUri, null, childsParentId + "=" + repoId, null, null);
         return new CursorLoader(this, childUri, null, "", null, null);
     }
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        Log.d(this.getLocalClassName(), "onLoadFinished: ");
-
-     //   Log.d(this.getLocalClassName(), "Load finished: " + DatabaseUtils.dumpCursorToString(data));
-
         cursorAdapter.swapCursor(data);
     }
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        Log.d(this.getLocalClassName(), "onLoaderReset: ");
         cursorAdapter.swapCursor(null);
+    }
+
+    public void scheduleAlarmStart(View v) {
+        Switch startReminder = (Switch) v;
+        if (startReminder.isChecked()) {
+            Calendar dueDate = Calendar.getInstance();
+            dueDate.set(startDate.getYear(), startDate.getMonth(), startDate.getDayOfMonth());
+            long dueDateMili = dueDate.getTimeInMillis() - 24 * 60 * 60 * 1000;
+            // Create an Intent and set the class that will execute when the Alarm triggers. Here we have
+            Intent intentAlarm = new Intent(this, MyAlarmReceiver.class);
+            intentAlarm.putExtra("alarmMessage", titleText.getText().toString().trim() + " starts in 24 hours");
+            // Get the Alarm Service.
+            AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+            // Set the alarm for a particular time.
+            alarmManager.set(AlarmManager.RTC_WAKEUP, dueDateMili, PendingIntent.getBroadcast(this, 1, intentAlarm, PendingIntent.FLAG_UPDATE_CURRENT));
+            Toast.makeText(this, "Alarm Scheduled", Toast.LENGTH_LONG).show();
+        }
+    }
+    public void scheduleAlarmEnd(View v) {
+        Switch endReminder = (Switch) v;
+        if (endReminder.isChecked()) {
+            Calendar dueDate = Calendar.getInstance();
+            dueDate.set(endDate.getYear(), endDate.getMonth(), endDate.getDayOfMonth());
+            long dueDateMili = dueDate.getTimeInMillis() - 24*60*60*1000;
+            // Create an Intent and set the class that will execute when the Alarm triggers. Here we have
+            Intent intentAlarm = new Intent(this, MyAlarmReceiver.class);
+            intentAlarm.putExtra("alarmMessage", titleText.getText().toString().trim() + " ends in 24 hours");
+            // Get the Alarm Service.
+            AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+            // Set the alarm for a particular time.
+            alarmManager.set(AlarmManager.RTC_WAKEUP, dueDateMili, PendingIntent.getBroadcast(this, 1, intentAlarm, PendingIntent.FLAG_UPDATE_CURRENT));
+            Toast.makeText(this, "Alarm Scheduled", Toast.LENGTH_LONG).show();
+        }
     }
 
 }

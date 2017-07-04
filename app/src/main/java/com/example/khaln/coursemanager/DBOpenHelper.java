@@ -31,11 +31,9 @@ public class DBOpenHelper extends SQLiteOpenHelper {
         db.execSQL(CourseRepo.createTable());
         db.execSQL(TermRepo.createTable());
         db.execSQL(MentorRepo.createTable());
-        Log.d("DBOpenHelper DL", db.getPath());
     }
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        Log.d(TAG, String.format("SQLiteDatabase.onUpgrade(%d -> %d)", oldVersion, newVersion));
         // Drop table if existed, all data will be gone!!!
         db.execSQL("DROP TABLE IF EXISTS " + NoteRepo.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + AssessmentRepo.TABLE_NAME);

@@ -7,14 +7,4 @@
         android:orderInCategory="102"
         app:showAsAction="always"
     />
-    <item
-        android:id="@+id/action_create_sample"
-        android:title="@string/action_create_Sample"
-        android:orderInCategory="100"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/action_delete_all"
-        android:title="@string/delete_all_notes"
-        android:orderInCategory="101"
-        app:showAsAction="never" />
 </menu>
