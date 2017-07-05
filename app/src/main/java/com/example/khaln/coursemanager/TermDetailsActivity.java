@@ -4,9 +4,8 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.DatePicker;
@@ -41,7 +40,6 @@ public class TermDetailsActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         Uri termUri = intent.getParcelableExtra(TermRepo.TABLE_NAME );
-//        Log.d(this.getLocalClassName() + "UI", "URI null? " + (courseUri == null) );
         if (termUri == null){
             action = Intent.ACTION_INSERT;
             setTitle(getString(R.string.new_term));
@@ -49,18 +47,14 @@ public class TermDetailsActivity extends AppCompatActivity {
             action = Intent.ACTION_EDIT;
             whereClause = TermRepo.ID + "=" + termUri.getLastPathSegment();
             hasChildren = intent.getBooleanExtra("hasChildren", false);
-//            Log.d("TActivity dl ui", "courseUri " + courseUri + " courseUri last path segment "+ courseUri.getLastPathSegment() + " whereClause " + whereClause);
             //Get item values
             Cursor cursor = getContentResolver().query(termUri, TermRepo.COLUMNS, "", null, null);
             cursor.moveToFirst();
             //Get existing values
-//            Log.d(this.getLocalClassName(), "fetching old values");
-
             oldText = cursor.getString(cursor.getColumnIndex(TermRepo.TITLE));
             oldStart = cursor.getString(cursor.getColumnIndex(TermRepo.START)).split("-");
             oldEnd = cursor.getString(cursor.getColumnIndex(TermRepo.END)).split("-");
             //Set values for various fields
-//            Log.d("TermDetailsActivity", "oldText: " + oldText + " oldStart: " + oldStart + " oldEnd: " + oldEnd );
             titleText.setText(oldText);
             startDate.updateDate(Integer.parseInt(oldStart[0]), Integer.parseInt(oldStart[1]), Integer.parseInt(oldStart[2]));
             endDate.updateDate(Integer.parseInt(oldEnd[0]), Integer.parseInt(oldEnd[1]), Integer.parseInt(oldEnd[2]));
@@ -95,7 +89,6 @@ public class TermDetailsActivity extends AppCompatActivity {
             getContentResolver().delete(itemUri, whereClause, null);
             Toast.makeText(this, R.string.item_deleted, Toast.LENGTH_SHORT).show();
             Intent deleteIntent = new Intent();
-            //TODO implement delete
             deleteIntent.putExtra("itemDeleted", true);
             setResult(RESULT_OK, deleteIntent);
             finish();
@@ -134,7 +127,6 @@ public class TermDetailsActivity extends AppCompatActivity {
         values.put(TermRepo.START, startDate);
         values.put(TermRepo.END, endDate);
         if (update) {
-            Log.d(this.getLocalClassName(), "Update: true itemUri: "+ itemUri +" values: "+ values.toString() + " whereClause: " + whereClause);
             getContentResolver().update(itemUri, values, whereClause, null);
             Toast.makeText(this, R.string.itemUpdated, Toast.LENGTH_SHORT).show();
             Intent updateIntent = new Intent();

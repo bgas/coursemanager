@@ -6,7 +6,6 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -27,7 +26,6 @@ public class AssessmentActivity extends TermActivity {
         repoTitle = intent.getStringExtra(AssessmentRepo.TITLE);
         repoTableName = AssessmentRepo.TABLE_NAME;
         uri = intent.getParcelableExtra(repoTableName);
-//        Log.d(this.getLocalClassName(), "extra from intent: " +uri);
         childRepoTitle = NoteRepo.TITLE;
         childRepoID = NoteRepo.ID;
         childRepoTableName = NoteRepo.TABLE_NAME;
@@ -52,7 +50,6 @@ public class AssessmentActivity extends TermActivity {
 
         //get term title and set as text for titleTextView
         titleTextView = (TextView) findViewById(R.id.textViewAssessmentTitle);
-//        Log.d(this.getLocalClassName(), "repoTitle: " +repoTitle);
         titleTextView.setText(repoTitle);
 
         getLoaderManager().initLoader(0, null, this);
@@ -60,11 +57,9 @@ public class AssessmentActivity extends TermActivity {
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        //String childUr = "";
         String loaderId = intent.getStringExtra(AssessmentRepo.ID);
         Uri loaderChildUri = MyContentProvider.NOTE_URI;
         String loaderChildsParentId = NoteRepo.ASSESSMENT_ID;
-//        Log.d(this.getLocalClassName(), "loaderChildUri: " + loaderChildUri + " loaderChildsParentId: "+ loaderChildsParentId + " loaderId: " + loaderId);
         return new CursorLoader(this, loaderChildUri, null, loaderChildsParentId + "=" + loaderId, null, null);
     }
 }

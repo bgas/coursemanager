@@ -2,20 +2,12 @@ package com.example.khaln.coursemanager;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.graphics.Color;
-import android.util.Log;
-import android.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CursorAdapter;
 import android.widget.TextView;
-
-import com.example.khaln.coursemanager.repo.CourseRepo;
-import com.example.khaln.coursemanager.repo.TermRepo;
-
-import java.util.Arrays;
-import java.util.HashMap;
 
 /**
  * Created by khaln on 5/25/17.

@@ -1,18 +1,13 @@
 package com.example.khaln.coursemanager;
 
 import android.app.LoaderManager;
-import android.content.ContentValues;
 import android.content.CursorLoader;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,17 +15,13 @@ import android.widget.AdapterView;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.khaln.coursemanager.repo.CourseRepo;
 import com.example.khaln.coursemanager.repo.TermRepo;
 
-import java.util.HashMap;
-
 public class TermActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<Cursor>//, android.app.LoaderManager.LoaderCallbacks<Object>
 {
-    //TODO convert to display courses
     protected static final int EDITOR_REQUEST_CODE = 1001;
     protected static final int CHILD_REQUEST_CODE = 1002;
     protected CursorAdapter cursorAdapter;

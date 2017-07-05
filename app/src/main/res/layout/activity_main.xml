@@ -12,27 +12,25 @@
         android:id="@+id/button_term_list"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginStart="16dp"
         android:text="@string/term_list"
         android:layout_alignParentTop="true"
-        android:layout_alignLeft="@+id/button_current_term"
-        android:layout_alignStart="@+id/button_current_term"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
         android:layout_marginTop="99dp"
         android:onClick="goToTermList"
         />
 
-    <Button
-        android:id="@+id/button_current_term"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/current_term"
-        android:layout_marginTop="24dp"
-        android:layout_marginLeft="118dp"
-        android:layout_marginStart="118dp"
-        android:layout_below="@+id/button_term_list"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:onClick="goToCurrentTerm"
-        />
+    <!--<Button-->
+        <!--android:id="@+id/button_current_term"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="@string/current_term"-->
+        <!--android:layout_marginTop="24dp"-->
+        <!--android:layout_marginLeft="118dp"-->
+        <!--android:layout_marginStart="118dp"-->
+        <!--android:layout_below="@+id/button_term_list"-->
+        <!--android:layout_alignParentLeft="true"-->
+        <!--android:layout_alignParentStart="true"-->
+        <!--android:onClick="goToCurrentTerm"-->
+        <!--/>-->
 </RelativeLayout>

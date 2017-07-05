@@ -93,25 +93,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.khaln.coursemanager.AssessmentActivity" />
         </activity>
-        <!--
-        <activity
-            android:name=".AssessmentActivity"
-            android:label="AssessmentActivity"
-            android:parentActivityName=".AssessmentActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.khaln.coursemanager.AssessmentActivity" />
-        </activity>
-        <activity
-            android:name=".NoteDetailsActivity"
-            android:label="NoteDetailsActivity"
-            android:parentActivityName=".NoteActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.khaln.coursemanager.NoteActivity" />
-        </activity>
-        -->
-
         <provider
             android:name=".MyContentProvider"
             android:authorities="com.example.khaln.coursemanager.courseprovider"

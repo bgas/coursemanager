@@ -1,7 +1,6 @@
 package com.example.khaln.coursemanager;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -10,7 +9,6 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,7 +18,6 @@ import android.widget.Toast;
 
 import com.example.khaln.coursemanager.repo.AssessmentRepo;
 import com.example.khaln.coursemanager.repo.NoteRepo;
-import com.example.khaln.coursemanager.repo.TermRepo;
 
 import java.io.File;
 import java.io.IOException;
@@ -79,13 +76,10 @@ public class NoteDetailsActivity extends AppCompatActivity {
                 myImageView.setImageURI(oldPhotoUri);
                 mCurrentPhotoPath = oldPhotoString;
             }
-
             //Set values for various fields
-
             titleText.setText(oldTitleText);
             bodyText.setText(oldBodyText);
             titleText.requestFocus();
-
         }
     }
 
@@ -106,7 +100,7 @@ public class NoteDetailsActivity extends AppCompatActivity {
             try {
                 photoFile = createImageFile();
             } catch (IOException ex) {
-                //TODO Error occurred while creating the File
+                Toast.makeText(this, R.string.image_file_error, Toast.LENGTH_SHORT).show();
             }
             // Continue only if the File was successfully created
             if (photoFile != null) {

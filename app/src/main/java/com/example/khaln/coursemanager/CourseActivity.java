@@ -6,7 +6,6 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -50,7 +49,6 @@ public class CourseActivity extends TermActivity {
 
         //get term title and set as text for titleTextView
         titleTextView = (TextView) findViewById(R.id.textViewCourseTitle);
-//        Log.d(this.getLocalClassName(), "repoTitle: " +repoTitle);
         titleTextView.setText(repoTitle);
 
         getLoaderManager().initLoader(0, null, this);
@@ -61,7 +59,6 @@ public class CourseActivity extends TermActivity {
         String loaderId = intent.getStringExtra(CourseRepo.ID);
         Uri loaderChildUri = MyContentProvider.ASSESSMENT_URI;
         String loaderChildsParentId = AssessmentRepo.COURSE_ID;
-//        Log.d(this.getLocalClassName(), "loaderChildUri: " + loaderChildUri + " loaderChildsParentId: "+ loaderChildsParentId + " loaderId: " + loaderId);
         return new CursorLoader(this, loaderChildUri, null, loaderChildsParentId + "=" + loaderId, null, null);
     }
 

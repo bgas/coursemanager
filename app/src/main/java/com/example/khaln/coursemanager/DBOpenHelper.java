@@ -1,8 +1,9 @@
 package com.example.khaln.coursemanager;
+
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
+
 import com.example.khaln.coursemanager.repo.AssessmentRepo;
 import com.example.khaln.coursemanager.repo.CourseRepo;
 import com.example.khaln.coursemanager.repo.MentorRepo;
@@ -17,8 +18,7 @@ public class DBOpenHelper extends SQLiteOpenHelper {
     //Constants for db name and version
     private static final String DATABASE_NAME = "coursemanager.db";
     private static final int DATABASE_VERSION = 1;
-//    public static final String[] TABLES = {ID, TITLE, START, END};
-    private static final String TAG = DBOpenHelper.class.getSimpleName().toString();
+    private static final String TAG = DBOpenHelper.class.getSimpleName();
 
     public DBOpenHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -42,7 +42,4 @@ public class DBOpenHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + MentorRepo.TABLE_NAME);
         onCreate(db);
     }
-
-
-
 }

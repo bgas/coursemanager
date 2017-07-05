@@ -9,11 +9,9 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,8 +27,6 @@ import com.example.khaln.coursemanager.repo.CourseRepo;
 import com.example.khaln.coursemanager.repo.MentorRepo;
 import com.example.khaln.coursemanager.repo.TermRepo;
 
-import java.text.DateFormat;
-import java.util.Arrays;
 import java.util.Calendar;
 
 public class CourseDetailsActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -159,7 +155,6 @@ public class CourseDetailsActivity extends AppCompatActivity implements LoaderMa
             getContentResolver().delete(itemUri, whereClauseCourse, null);
             Toast.makeText(this, R.string.item_deleted, Toast.LENGTH_SHORT).show();
             Intent deleteIntent = new Intent();
-            //TODO implement delete return to parents parent
             deleteIntent.putExtra("itemDeleted", true);
             setResult(RESULT_OK, deleteIntent);
             finish();

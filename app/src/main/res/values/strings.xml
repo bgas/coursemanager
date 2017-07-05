@@ -39,6 +39,7 @@
     <string name="contains_assessments">Contains Assessments:</string>
     <string name="itemWithSubsNotDeletable">Item has sub-items, cannot be deleted</string>
     <string name="_24_hour_reminder">24 hour reminder</string>
+    <string name="image_file_error">Unable to create image file</string>
 
 
 </resources>

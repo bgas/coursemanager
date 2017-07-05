@@ -7,9 +7,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,11 +17,9 @@ import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.Toast;
 
-
 import com.example.khaln.coursemanager.repo.AssessmentRepo;
 import com.example.khaln.coursemanager.repo.CourseRepo;
 
-import java.text.DateFormat;
 import java.util.Calendar;
 
 public class AssessmentDetailsActivity extends AppCompatActivity {
@@ -106,7 +103,6 @@ public class AssessmentDetailsActivity extends AppCompatActivity {
             getContentResolver().delete(itemUri, whereClause, null);
             Toast.makeText(this, R.string.item_deleted, Toast.LENGTH_SHORT).show();
             Intent deleteIntent = new Intent();
-            //TODO implement delete return to parents parent
             deleteIntent.putExtra("itemDeleted", true);
             setResult(RESULT_OK, deleteIntent);
             finish();
@@ -129,8 +125,6 @@ public class AssessmentDetailsActivity extends AppCompatActivity {
             case Intent.ACTION_EDIT:
                 if (newText.length() == 0){
                     deleteItem();
-                } else if (oldText.equals(newText) && oldEnd.equals(newEnd) ){
-                    setResult(RESULT_CANCELED);
                 } else {
                     addUpdateItem(newText, newEnd, courseId, true);
                 }

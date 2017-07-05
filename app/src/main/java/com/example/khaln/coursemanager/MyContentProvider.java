@@ -9,16 +9,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.example.khaln.coursemanager.repo.AssessmentRepo;
 import com.example.khaln.coursemanager.repo.CourseRepo;
 import com.example.khaln.coursemanager.repo.MentorRepo;
 import com.example.khaln.coursemanager.repo.NoteRepo;
 import com.example.khaln.coursemanager.repo.TermRepo;
-
-import java.net.URI;
-import java.util.Arrays;
 
 /**
  * Created by khaln on 5/11/17.
@@ -88,7 +84,6 @@ public class MyContentProvider extends ContentProvider {
         return true;
     }
 
-    @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         //select
         String table;
